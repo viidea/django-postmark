@@ -5,10 +5,12 @@ from itertools import izip_longest
 from datetime import datetime
 from pytz import timezone
 import pytz
+from django.conf import settings
 
 from postmark.signals import post_send
 
 POSTMARK_DATETIME_STRING = "%Y-%m-%dT%H:%M:%S.%f"
+POSTMARK_USE_TZ = getattr(settings, "POSTMARK_USE_TZ", True)
 
 TO_CHOICES = (
     ("to", _("Recipient")),
@@ -101,12 +103,14 @@ def sent_message(sender, **kwargs):
         
         if not recipient[0]:
             continue
-        
+
         timestamp, tz = resp["SubmittedAt"].rsplit("+", 1)
         tz_offset = int(tz.split(":", 1)[0])
         tz = timezone("Etc/GMT%s%d" % ("+" if tz_offset >= 0 else "-", tz_offset))
         submitted_at = tz.localize(datetime.strptime(timestamp[:26], POSTMARK_DATETIME_STRING)).astimezone(pytz.utc)
-        
+
+        if POSTMARK_USE_TZ == False:
+            submitted_at = submitted_at.replace(tzinfo=None)
         
         emsg = EmailMessage(
             message_id=resp["MessageID"],
