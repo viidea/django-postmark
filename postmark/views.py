@@ -3,10 +3,9 @@ from django.core.exceptions import ImproperlyConfigured
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 from django.conf import settings
-from datetime import datetime
-from pytz import timezone
 import pytz
 import base64
+import dateutil.parser
 from django.conf import settings
 
 from postmark.models import EmailMessage, EmailBounce
@@ -73,10 +72,7 @@ def bounce(request):
         
         bounce_dict = json.loads(request.read())
             
-        timestamp, tz = bounce_dict["BouncedAt"].rsplit("+", 1)
-        tz_offset = int(tz.split(":", 1)[0])
-        tz = timezone("Etc/GMT%s%d" % ("+" if tz_offset >= 0 else "-", tz_offset))
-        bounced_at = tz.localize(datetime.strptime(timestamp[:26], POSTMARK_DATETIME_STRING)).astimezone(pytz.utc)
+        bounced_at = dateutil.parser.parse(bounce_dict["BouncedAt"]).astimezone(pytz.utc)
             
         if POSTMARK_USE_TZ == False:
             submitted_at = submitted_at.replace(tzinfo=None)
