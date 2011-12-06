@@ -7,6 +7,7 @@ from datetime import datetime
 from pytz import timezone
 import pytz
 import base64
+from django.conf import settings
 
 from postmark.models import EmailMessage, EmailBounce
 
@@ -19,6 +20,7 @@ except ImportError:
         raise Exception('Cannot use django-postmark without Python 2.6 or greater, or Python 2.4 or 2.5 and the "simplejson" library')
 
 POSTMARK_DATETIME_STRING = "%Y-%m-%dT%H:%M:%S.%f"
+POSTMARK_USE_TZ = getattr(settings, "POSTMARK_USE_TZ", True)
 
 # Settings
 POSTMARK_API_USER = getattr(settings, "POSTMARK_API_USER", None)
@@ -76,6 +78,9 @@ def bounce(request):
         tz = timezone("Etc/GMT%s%d" % ("+" if tz_offset >= 0 else "-", tz_offset))
         bounced_at = tz.localize(datetime.strptime(timestamp[:26], POSTMARK_DATETIME_STRING)).astimezone(pytz.utc)
             
+        if POSTMARK_USE_TZ == False:
+            submitted_at = submitted_at.replace(tzinfo=None)
+
         em = get_object_or_404(EmailMessage, message_id=bounce_dict["MessageID"], to=bounce_dict["Email"])
         eb, created = EmailBounce.objects.get_or_create(
             id=bounce_dict["ID"],
