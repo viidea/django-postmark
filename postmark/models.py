@@ -9,6 +9,7 @@ from django.conf import settings
 from postmark.signals import post_send
 
 POSTMARK_DATETIME_STRING = "%Y-%m-%dT%H:%M:%S.%f"
+POSTMARK_USE_TZ = getattr(settings, "POSTMARK_USE_TZ", True)
 
 TO_CHOICES = (
     ("to", _("Recipient")),

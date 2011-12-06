@@ -2,7 +2,6 @@ from django.http import HttpResponse, HttpResponseNotAllowed, HttpResponseBadReq
 from django.core.exceptions import ImproperlyConfigured
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
-from django.conf import settings
 import pytz
 import base64
 import dateutil.parser
@@ -75,7 +74,7 @@ def bounce(request):
         bounced_at = dateutil.parser.parse(bounce_dict["BouncedAt"]).astimezone(pytz.utc)
             
         if POSTMARK_USE_TZ == False:
-            submitted_at = submitted_at.replace(tzinfo=None)
+            bounced_at = bounced_at.replace(tzinfo=None)
 
         em = get_object_or_404(EmailMessage, message_id=bounce_dict["MessageID"], to=bounce_dict["Email"])
         eb, created = EmailBounce.objects.get_or_create(
