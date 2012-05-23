@@ -50,6 +50,24 @@ def bounce(request):
             "Content": null,
             "Subject": null
         }
+
+        Example message when Postmark sends test message:
+        {
+            'ID': 42,
+            'Type': u'HardBounce',
+            'Name': u'Hard bounce',
+            'Tag': u'Test',
+
+            'BouncedAt': u'2012-05-23T13:49:48.0254-04:00',
+            'CanActivate': True,
+            'Description': u'Test bounce description',
+            'Details': u'Test bounce details',
+            'DumpAvailable': True,
+            'Email': u'john@example.com',
+            'Inactive': True,
+            'TypeCode': 1
+        }
+
     """
     if request.method in ["POST"]:
         if POSTMARK_API_USER is not None:
@@ -69,12 +87,15 @@ def bounce(request):
                 print "lol"
                 return HttpResponseForbidden()
         
-        bounce_dict = json.loads(request.read())
-            
+        bounce_dict = json.loads(request.read())            
         bounced_at = dateutil.parser.parse(bounce_dict["BouncedAt"]).astimezone(pytz.utc)
             
         if POSTMARK_USE_TZ == False:
             bounced_at = bounced_at.replace(tzinfo=None)
+
+        # for test message, we don't get MessageID
+        if not bounce_dict.get('MessageID'):
+            return HttpResponse(json.dumps({"status": "ok"}))
 
         em = get_object_or_404(EmailMessage, message_id=bounce_dict["MessageID"], to=bounce_dict["Email"])
         eb, created = EmailBounce.objects.get_or_create(
