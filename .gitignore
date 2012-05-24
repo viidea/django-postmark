@@ -1,2 +1,3 @@
 dist
 django_postmark.egg-info
+*.pyc
