@@ -8,7 +8,7 @@ import dateutil.parser
 from django.conf import settings
 
 from postmark.models import EmailMessage, EmailBounce
-
+from pprint import pprint
 try:
     import json                     
 except ImportError:
@@ -68,6 +68,21 @@ def bounce(request):
             'TypeCode': 1
         }
 
+        and actual error message:
+        {
+            u'BouncedAt': u'2012-05-23T19:18:47.756Z',
+            u'CanActivate': True,
+            u'Details': u'action: failed\r\n',
+            u'DumpAvailable': True,
+            u'Email': u'bounce@viiiiiiidea.com',
+            u'ID': 381077264,
+            u'Inactive': True,
+            u'MessageID': u'b00e91cc-2401-47af-be63-346762fcc0ca',
+            u'Subject': u'Sandbox - access information',
+            u'Type': u'HardBounce',
+            u'TypeCode': 1
+        }
+
     """
     if request.method in ["POST"]:
         if POSTMARK_API_USER is not None:
@@ -93,6 +108,7 @@ def bounce(request):
         if POSTMARK_USE_TZ == False:
             bounced_at = bounced_at.replace(tzinfo=None)
 
+        pprint(bounce_dict)
         # for test message, we don't get MessageID
         if not bounce_dict.get('MessageID'):
             return HttpResponse(json.dumps({"status": "ok"}))
@@ -100,10 +116,10 @@ def bounce(request):
         em = get_object_or_404(EmailMessage, message_id=bounce_dict["MessageID"], to=bounce_dict["Email"])
         eb, created = EmailBounce.objects.get_or_create(
             id=bounce_dict["ID"],
-            default={
+            defaults={
                 "message": em,
                 "type": bounce_dict["Type"],
-                "description": bounce_dict["Description"],
+                "description": bounce_dict.get("Description", ''),
                 "details": bounce_dict["Details"],
                 "inactive": bounce_dict["Inactive"],
                 "can_activate": bounce_dict["CanActivate"],
