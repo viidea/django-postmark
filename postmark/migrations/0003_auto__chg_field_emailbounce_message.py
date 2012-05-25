@@ -10,7 +10,8 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
 
         # Changing field 'EmailBounce.message'
-        db.alter_column('postmark_emailbounce', 'message_id', self.gf('django.db.models.fields.related.ForeignKey')(null=True, to=orm['postmark.EmailMessage']))
+        #db.alter_column('postmark_emailbounce', 'message_id', self.gf('django.db.models.fields.related.ForeignKey')(null=True, to=orm['postmark.EmailMessage']))
+        db.execute("ALTER TABLE postmark_emailbounce ALTER COLUMN message_id SET not null;")
 
     def backwards(self, orm):
 
