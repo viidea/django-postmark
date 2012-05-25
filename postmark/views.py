@@ -113,7 +113,11 @@ def bounce(request):
         if not bounce_dict.get('MessageID'):
             return HttpResponse(json.dumps({"status": "ok"}))
 
-        em = get_object_or_404(EmailMessage, message_id=bounce_dict["MessageID"], to=bounce_dict["Email"])
+        if EmailMessage.objects.filter(message_id=bounce_dict["MessageID"]).exists():
+            em = get_object_or_404(EmailMessage, message_id=bounce_dict["MessageID"], to=bounce_dict["Email"])
+        else: 
+            em = None
+            
         eb, created = EmailBounce.objects.get_or_create(
             id=bounce_dict["ID"],
             defaults={
