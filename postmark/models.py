@@ -78,9 +78,14 @@ class EmailBounce(models.Model):
     details = models.TextField(_("Details"))
     
     bounced_at = models.DateTimeField(_("Bounced At"))
+    # duplicating this allows to afterwards match EmailMessage to EmailBounce
+    message_id = models.CharField(_("Message ID"), max_length=40, blank=True, null=True)
     
     def __unicode__(self):
-        return u"Bounce: %s" % (self.message.to,)
+        # if self.message:
+        #     return u"Bounce: %s" % (self.message.to,)
+        # else:
+        return u"Bounce: %s" % (self.id,)
     
     class Meta:
         verbose_name = _("email bounce")

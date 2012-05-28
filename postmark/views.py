@@ -99,7 +99,6 @@ def bounce(request):
                 return HttpResponseForbidden()
                 
             if not username_password == "%s:%s" % (POSTMARK_API_USER, POSTMARK_API_PASSWORD):
-                print "lol"
                 return HttpResponseForbidden()
         
         bounce_dict = json.loads(request.read())            
@@ -118,6 +117,7 @@ def bounce(request):
             id=bounce_dict["ID"],
             defaults={
                 "message": em,
+                "message_id": bounce_dict.get("MessageID"),
                 "type": bounce_dict["Type"],
                 "description": bounce_dict.get("Description", ''),
                 "details": bounce_dict["Details"],

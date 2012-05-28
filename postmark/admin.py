@@ -66,5 +66,5 @@ class EmailMessageAdmin(admin.ModelAdmin):
         })
     )
 
-admin.site.register(EmailMessage, EmailMessageAdmin)
-admin.site.register(EmailBounce, EmailBounceAdmin)
+admin.site.register(EmailMessage)
+admin.site.register(EmailBounce)
