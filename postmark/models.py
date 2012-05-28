@@ -80,7 +80,7 @@ class EmailBounce(models.Model):
     
     bounced_at = models.DateTimeField(_("Bounced At"))
     # duplicating this allows to afterwards match EmailMessage to EmailBounce
-    message_id = models.CharField(_("Message ID"), max_length=40, blank=True, null=True)
+    msg_id = models.CharField(_("Message ID"), max_length=40, blank=True, null=True)
     
     def __unicode__(self):
         # if self.message:

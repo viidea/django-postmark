@@ -8,15 +8,15 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding field 'EmailBounce.message_id'
-        db.add_column('postmark_emailbounce', 'message_id',
+        # Adding field 'EmailBounce.msg_id'
+        db.add_column('postmark_emailbounce', 'msg_id',
                       self.gf('django.db.models.fields.CharField')(max_length=40, null=True, blank=True),
                       keep_default=False)
 
 
     def backwards(self, orm):
-        # Deleting field 'EmailBounce.message_id'
-        db.delete_column('postmark_emailbounce', 'message_id')
+        # Deleting field 'EmailBounce.msg_id'
+        db.delete_column('postmark_emailbounce', 'msg_id')
 
 
     models = {
@@ -29,8 +29,8 @@ class Migration(SchemaMigration):
             'details': ('django.db.models.fields.TextField', [], {}),
             'id': ('django.db.models.fields.PositiveIntegerField', [], {'primary_key': 'True'}),
             'inactive': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'message': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'bounces'", 'to': "orm['postmark.EmailMessage']"}),
-            'message_id': ('django.db.models.fields.CharField', [], {'max_length': '40', 'null': 'True', 'blank': 'True'}),
+            'message': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'bounces'", 'null': 'True', 'to': "orm['postmark.EmailMessage']"}),
+            'msg_id': ('django.db.models.fields.CharField', [], {'max_length': '40', 'null': 'True', 'blank': 'True'}),
             'type': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
         'postmark.emailmessage': {

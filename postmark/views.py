@@ -107,7 +107,7 @@ def bounce(request):
         if POSTMARK_USE_TZ == False:
             bounced_at = bounced_at.replace(tzinfo=None)
 
-        pprint(bounce_dict)
+        # pprint(bounce_dict)
         # for test message, we don't get MessageID
         if not bounce_dict.get('MessageID'):
             return HttpResponse(json.dumps({"status": "ok"}))
@@ -121,7 +121,7 @@ def bounce(request):
             id=bounce_dict["ID"],
             defaults={
                 "message": em,
-                "message_id": bounce_dict.get("MessageID"),
+                "msg_id": bounce_dict.get("MessageID"),
                 "type": bounce_dict["Type"],
                 "description": bounce_dict.get("Description", ''),
                 "details": bounce_dict["Details"],
