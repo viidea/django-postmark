@@ -161,12 +161,12 @@ class PostmarkBackend(BaseEmailBackend):
         
         num_sent = 0
         for message in email_messages:
-            sent = self._send(PostmarkMessage(message, self.fail_silently))
+            sent = self._send(PostmarkMessage(message, self.fail_silently), message)
             if sent:
                 num_sent += 1
         return num_sent
     
-    def _send(self, message):
+    def _send(self, message, djangoMessage):
         http = httplib2.Http()
         
         if POSTMARK_TEST_MODE:
@@ -188,6 +188,7 @@ class PostmarkBackend(BaseEmailBackend):
             raise
         
         if resp["status"] == "200":
+            djangoMessage.external_id = json.loads(content).get('MessageID')
             post_send.send(sender=self, message=message, response=json.loads(content))
             return True
         elif resp["status"] == "401":
